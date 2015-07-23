@@ -46,6 +46,11 @@ var routes = [
         method: 'GET',
         path:'/home',
         handler: require("./handlers/home.js")
+    },
+    {
+        method: 'GET',
+        path:'/issues2',
+        handler: require("./handlers/issue_page.js")
     }
     // {
     //     method: 'POST',
