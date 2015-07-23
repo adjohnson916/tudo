@@ -1,6 +1,6 @@
 var riot    = require('riot');
 var Path    = require('path');
-var auth_handler = require('./handlers/github_auth');
+
 
 var routes = [
     {
@@ -12,53 +12,32 @@ var routes = [
             }
         }
     },
-    {
-        method: 'GET',
-        path:'/issues',
-        handler: require("./handlers/get-issues.js")
-    },
+
     {
         method: 'GET',
         path:'/labels',
-        handler: require("./handlers/LabelsCtrl.js").get
+        handler: require("./handlers/labels_handler.js").get
     },
     {
         method: 'POST',
         path:'/labels',
-        handler: require("./handlers/LabelsCtrl.js").create
+        handler: require("./handlers/labels_handler.js").create
     },
     {
         method: 'PUT',
         path:'/labels',
-        handler: require("./handlers/LabelsCtrl.js").update
+        handler: require("./handlers/labels_handler.js").update
     },
     {
         method: 'DELETE',
         path:'/labels/{name}',
-        handler: require("./handlers/LabelsCtrl.js").remove
+        handler: require("./handlers/labels_handler.js").remove
     },
     {
         method: 'GET',
-        path:'/login',
-        handler: auth_handler
-    },
-    {
-        method: 'GET',
-        path:'/home',
-        handler: require("./handlers/home.js")
-    },
-    {
-        method: 'GET',
-        path:'/issues2',
-        handler: require("./handlers/issue_page.js")
+        path:'/login', 
+        handler: require('./handlers/authentication_handler.js')
     }
-    // {
-    //     method: 'POST',
-    //     path:'/main',
-    //     handler: function (request, reply) {
-    //         console.log(request.payload);
-    //     }
-    // }
 ];
 
 module.exports = routes;

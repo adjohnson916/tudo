@@ -54,49 +54,67 @@ To deploy to Heroku you will need to add the environment variables _manually_ (_
 > see: https://translate.google.com/#pt/en/tudo
 
 ###Front-end
-**20150720:** @msmichellegar, @iteles and Anneka S brainstormed on some front-end visuals and created some simple wireframes:
-https://docs.google.com/presentation/d/11JJjfQ-MtnfnRGQT9KREmqUHQj4wkgB7tjSxXhXyNJg/edit#slide=id.p
 
-<img width="918" alt="proposed-initial-stripped-down-design" src="https://cloud.githubusercontent.com/assets/4185328/8803847/24905988-2fc1-11e5-8a10-754ab36236ad.png">
+@msmichellegar and @iteles have styled three screens for the project: the "login"/landing page, the home feed, and an issue view. Original wireframes for these screens (and an archive of discussed designs) can be found [here](https://docs.google.com/presentation/d/11JJjfQ-MtnfnRGQT9KREmqUHQj4wkgB7tjSxXhXyNJg/edit#slide=id.p).
 
-#####Challenges:
-+ What is the ideal user flow throughout the app? How do typical people (technical and non-technical) find the issues they're looking for?  
-+ How do we ensure that issues are _not_ buried **more than 1 click deep**?
+We have worked to a very stripped-down design for the MVP, and will be adding more functionality as agreed on by the dwyl community (customisation, organisation and repo views, toggle views).
 
-Earlier conversations yielded many different priorities when using Github issues so understanding what would be useful as a **default homepage** (prior to adding _customisation of content_) was interesting.
-We agreed that **for now we would start with a stripped down version** that shows two things:
-+ A list of issues as seen by a person when they go to http://github.com/issues
-+ One additional view, filtering all issues assigned to the login in person
+<img width="600" alt="proposed-initial-stripped-down-design" src="https://cloud.githubusercontent.com/assets/4185328/8803847/24905988-2fc1-11e5-8a10-754ab36236ad.png">
 
-_Features such as search, prioritisation, creation of issues and creation of labels, etc will be added as they are agreed on by the group at [#dwylsummer](https://github.com/dwyl/summer-2015)._
-
-#####Cards vs rows
-Many conversations were had on this visual difference between items as 'cards' or items as 'rows'.
-
-<img width="899" alt="screen shot 2015-07-21 at 19 43 34" src="https://cloud.githubusercontent.com/assets/4185328/8809534/2effbd4e-2fe1-11e5-91d8-46adf0210549.png">
-
-_Cards_ encourage people to move them around and provide a greater visual differentiation between the various items. This will only become relevant if issues can be picked up and moved around to redetermine prioritisation.
+<img width="280" alt="proposed-initial-stripped-down-design" src="https://cloud.githubusercontent.com/assets/10683087/8856303/ed930078-3161-11e5-9f84-edadadaa885a.png">
 
 ## Github API - issues
 
-You will temporarily need a env.json file (like below) to run this code.
-```
-{
-    "GITHUB_KEY": "your personal acccess token"
-}
-```
-The only issues you will be able to get (for now) are issues assigned to you by visiting localhost:8000/issues
+Please make sure you have an env.json file based upon env.json_sample.
 
-This begins our exploration into the Github API - Issues.
+The only issues you will be able to get (for now, until authentication is integrated) are issues that only you can see (or whoever's GitHub access token you're using). These issues can be filtered using the following filters:
+- **all:** to get all the issues a user can see
+- **assigned:** to get all the issues assigned to a user
+- **created:** to get all the issues created by a user
+- **subscribed:** to get all the issues to which a user is subscribed
+- **mentioned:** to get all the issues that mention a user
 
-Issues will be returned in an array. If you would like to see  an example of an issue then checkout the exampleOfBasicIssue.json provided. This is only basic does not have comments on and therefore a further request to the github API is needed to decorate further.
+The default issue object returned by a query to the GitHub API contains a 'comments_url' that links to all the issue's comments. We push the comment information to each issue in the newly created 'comment_items' property.
+
+Issues are returned in an array of objects; an example of issues, including the 'comment_items' property, can be viewed in example_issues.json.
+
+This should be a transferrable function - easily implemented in a handler or incorporated into the existing database functions.
+
+
+## Database Structure
+
+Issues and Users are stored as hashes in Redis.  
+A user's list of issues is stored as a sorted (by date of update) set.  
+All users are also stored in an unsorted set.
+
+An issue hash has the following properties:
++ id  
++ created_by
++ owner_name
++ repo_name
++ title
++ first_line
++ labels
+ + name
+ + color
++ updated_at
++ created_at
++ last_comment
++ number_of_comments
++ issue_number
++ assignee
+
+A user hash has the following properties:
++ username
+
+To get a users issues, we have the function in _fetch_issues_by_user.js_, which adds the user to the database if they don't already exist, and gets their issues, from the database if they are there, otherwise from the github api.
 
 ###**Glossary**
 
 ####Labels
 
 Labels are used to organise issues into logical groups. An issue can have multiple labels. GitHub provide us with the following examples:
- 
+
 
  - **bug:** *a software defect (incorrect step, process or data definition) that causes a failure.*
  - **duplicate**: *when the same GitHub issue has been created twice.*
