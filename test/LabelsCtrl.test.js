@@ -103,9 +103,7 @@ test('Labels controller', function (t) {
 	});
 
 	t.test('#delete one label', function (st) {
-
 		server.stop();
-		st.end();
+		st.end()
 	});
-
 });

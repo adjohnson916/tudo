@@ -1,5 +1,4 @@
 var riot    = require('riot');
-var Path    = require('path');
 
 
 var routes = [
@@ -8,11 +7,15 @@ var routes = [
         path: '/{param*}',
         handler: {
             directory: {
-                path: Path.normalize(__dirname + '/')
+                path: './public'
             }
         }
     },
-
+    {
+        method: 'POST',
+        path:'/home',
+        handler: require("./handlers/home_handler.js")
+    },
     {
         method: 'GET',
         path:'/labels',
@@ -35,7 +38,7 @@ var routes = [
     },
     {
         method: 'GET',
-        path:'/login', 
+        path:'/login',
         handler: require('./handlers/authentication_handler.js')
     }
 ];
